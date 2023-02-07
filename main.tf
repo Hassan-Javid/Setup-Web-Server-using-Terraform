@@ -14,13 +14,6 @@ provider "aws" {
 }
 
 
-# provider "aws" {
-#   version = "~> 2.0"
-#   region     = "us-east-1"
-#   access_key = "AKIAJTTSSUF2PB6HDCCA"
-#   secret_key = "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"
-# }
-
 # 1. Create vpc
 
 resource "aws_vpc" "prod-vpc" {
@@ -137,11 +130,17 @@ output "server_public_ip" {
 
 # 9. Create Ubuntu server and install/enable apache2
 
+resource "aws_key_pair" "key4webserverproject_auth" {
+  key_name   = "key4webserverproject_auth"
+  public_key = file("~/.ssh/key4webserverproject.pub")
+  
+}
+
 resource "aws_instance" "web-server-instance" {
   ami               = "ami-085925f297f89fce1"
   instance_type     = "t2.micro"
   availability_zone = "us-east-1a"
-  key_name          = "main-key"
+  key_name = aws_key_pair.key4webserverproject_auth.id
 
   network_interface {
     device_index         = 0
